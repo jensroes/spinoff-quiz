@@ -1,0 +1,842 @@
+---
+title: "Stats spin-off: the quiz"
+author: "Jens Roeser"
+date: "Compiled `r Sys.Date()`"
+output: 
+  learnr::tutorial:
+    theme: simplex
+    #“cerulean”, “journal”, “flatly”, “darkly”, “readable”, “spacelab”, “united”, “cosmo”, “lumen”, “paper”, “sandstone”, “simplex”, “yeti”
+    css: css/my-css.css
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+description: >
+  Welcome to this practice test! Answer all questions and make sure you understand why an answer is correct (or why not).
+  
+---
+
+```{r setup, include=FALSE}
+library(webex)
+library(tidyverse)
+library(faux)
+library(cowplot)
+library(learnr)
+library(psyntur)
+
+options(scipen = 999)
+knitr::opts_chunk$set(echo = FALSE,
+                      comment=NA, 
+                      warning = FALSE,
+                      message =FALSE)
+
+theme_set(theme_classic(base_size = 14) +
+          theme(panel.grid = element_line(colour = "grey95"),
+                panel.background = element_rect(fill = "transparent")))  
+
+tutorial_options(exercise.timelimit = 100000)
+```
+
+## Overview
+
+
+Some of the questions are relatively close to what you can expect to see in the real exam. So, if you master this test, you're well set for the exam. Now, it is important that you understand why answers are correct or not. Just pairing questions and answers doesn't demonstrate learning. Use the time in the workshops to discuss your answers and thoughts with other students and your workshop tutor. This will prepare you for the exam way more than just finding the correct answers to every question. Fingers crossed :)
+
+To answer some of the questions below, you will need to have [this link](http://shiny.ntupsychology.net/test-statistic-app/) open on your phone or in another browser window for some of the questions. 
+
+This app allows you to inspect how the inferential tests you've learned so far correspond to visualizations of data. Further, it allows you to test how factors such as sample size and the size of the natural variability in the data (SD) affects the distribution of the data and the inference based on linear regression, *t*-test, and ANOVA. Because you can simulate data with this app it allows you to check what happens to test statistics when you change parameters (i.e. the slides). Have a play before you start this test. 
+
+
+
+
+
+## Choosing a statistical test
+
+```{r test1 }
+quiz(caption = "You're a stats consultant and need to advise colleagues on which test to use:",
+  question("Let us assume that the amount of alcohol consumed per week by left-handers and right-handers are normally distributed. If we randomly choose a sample of left-handers, and randomly choose a sample of right-handers, which method should we use to test whether the average alcohol consumption of left-handers in the population is different to the average consumption of right-handers in the population?",
+           answer("Independent samples *t*-test", correct = TRUE),
+           answer("Paired samples *t*-test"),
+           answer("Pearson's correlation coefficient"),
+           answer("ANOVA"),
+           allow_retry = TRUE,
+           random_answer_order = TRUE  ),
+  question("We measured the weight and height of 10 randomly chosen males to test whether we can predict someone's weight from their height. Which test would you use to test a prediction?",
+         answer("Linear regression", correct = TRUE),
+         answer("Paired samples *t*-test"),
+         answer("Pearson's correlation coefficient"),
+         answer("ANOVA"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ),
+  question("We recorded participants' depression and anxiety scores. Because we know that participant's that struggle with depression show often higher levels of anxiety, and vice versa, we needed to assess the association between both variables. Which test should we use?",
+         answer("Independent samples *t*-test"),
+         answer("Paired samples *t*-test"),
+         answer("Pearson's correlation coefficient", correct = TRUE),
+         answer("ANOVA"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ))
+```
+
+
+
+## *p*-value  {data-progressive=TRUE}
+
+At the core of inferential statistics is the *p*-value. The *p*-value is a probability, i.e. a number between 0 and 1 where 0 is 'never' and 1 is 'always'. This probability stands for the likelihood of an event. This event has to do with the data we observe and the null hypothesis H$_0$. Explore the meaning in the following questions.
+
+\
+
+
+```{r p1 }
+quiz(caption = "Because of the inverse logic of what the *p*-value means, there is a lot of confusion, even among researchers, about what the *p*-value means. So here is your chance to demonstrate you know it better :)", 
+  question("What does a *p*-value show?",
+         answer("The probability of an observed effect if the true (unknown) effect is null.", correct = TRUE),
+         answer("The statistical power of an effect."),
+         answer("The probability of an effect (i.e. the alternative hypothesis) being true."),
+         answer("The probability of the null hypothesis being true."),
+         answer("The probability of the null hypothesis being false."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ))
+```
+
+
+```{r p2 }
+quiz(caption = "There is a difference between what the test statistic means and how we use the test statistic to draw conclusions about our hypothesis.",
+  question("So strictly speaking if the p-value is < 0.05 we ...",
+         answer("reject the null hypothesis.", correct = TRUE),
+         answer("accept the null hypothesis."),
+         answer("reject the alternative hypothesis."),
+         answer("accept the alternative hypothesis."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ),
+  question("Again strictly speaking if the p-value is > 0.05 we ...",
+         answer("fail to reject the null hypothesis.", correct = TRUE),
+         answer("accept the null hypothesis."),
+         answer("reject the alternative hypothesis."),
+         answer("accept the alternative hypothesis."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ),
+question("What can we conclude from a p-value > 0.05?",
+         answer("Nothing. The evidence is inconclusive.", correct = TRUE),
+         answer("The null hypothesis is true. There is no effect in the population."),
+         answer("The alternative hypothesis is true. Large probability of an effect."),
+         answer("The alternative hypothesis is false. Strong evidence that there must be no effect in the population."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ),
+  question("We test a null hypothesis. The p-value is exactly 0.05. According to conventional standards of hypothesis testing, which of the following is the recommended conclusion to draw?",
+         answer("We should fail to reject the null hypothesis.", correct = TRUE),
+         answer("We should accept the null hypothesis."),
+         answer("We should reject the null hypothesis."),
+         answer("The null hypothesis and alternative hypothesis are equally likely."),
+         answer("We should fail to accept the null hypothesis."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         )
+)
+```
+
+
+
+And a final *p*-value problem:
+
+```{r p6 }
+question("We test a null hypothesis. The p-value is 0.0125. What does this mean?",
+         answer("If the null hypothesis is true, the probability of obtaining results as or more extreme than those obtained is equal to 0.0125.", correct = TRUE),
+         answer("The probability that the null hypothesis is true is equal to 0.0125."),
+         answer("The probability that the results are due to chance is equal to 0.0125."),
+         answer("The probability that the null hypothesis is false is equal to 0.0125."),
+         answer("If the null hypothesis is true, the probability of obtaining the results is equal to .0125."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         )
+```
+
+
+
+
+
+
+
+
+
+
+## *t*-test
+
+```{r ttest}
+question("Blomkvist et al. (2017) recorded reaction times of adults playing a video game. In their data we can compare the response times of the participants' dominant and non-dominant hand. Which test would you use?",
+         answer("Paired-samples *t*-test", correct = TRUE),
+         answer("Independent samples *t*-test"),
+         answer("ANOVA"),
+         answer("Correlation"),
+         answer("There is a medium negative correlation between x and y"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         )
+```
+
+```{r}
+blomkvist <- read_csv("data/blomkvist_hand.csv") 
+blomkvist_wide <- pivot_wider(blomkvist, names_from = hand, values_from = rt) %>%
+  rename(nondominant = `non dominant`)
+```
+
+
+
+```{r ttest2}
+question("Following on the previous question we performed a *t*-test on Blomkvist et al.'s (2017) data comparing the  reaction times of the participants' dominant and non-dominant hand. The output of the test is below. How would you write up the results of the *t*-test?",
+         answer("*t*(352)=-0.31, *p*>0.05", correct = TRUE),
+         answer("*t* = 352, *p*>0.05 "),
+         answer("*t*(352)=-0.31, *p*<0.05"),
+         answer("*t*(350)=-0.31, *p*>0.05"),
+         answer("*t*(352)=-1.98, *p*>0.05"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         )
+```
+
+```{r echo = TRUE}
+library(psyntur)
+paired_t_test(y1 = dominant, y2 = nondominant, data = blomkvist_wide)
+```
+
+```{r ttest3}
+question("From the *t*-test output, work out how many participants contributed data to this analysis.",
+         answer("353", correct = TRUE),
+         answer("352"),
+         answer("356"),
+         answer("Not enough information provided"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         )
+```
+
+
+\
+
+For the following tasks you will need to open the simulation app. Click on [this link](http://shiny.ntupsychology.net/test-statistic-app/) and navigate to the "t-value" tab.
+
+
+```{r ttestapp}
+quiz(caption = "Exploring the *t*-test using simulations. Work out the answers to the following questions using the stats app (link above).",
+  question("Move the SD slider left and then all the way to the right. What do you observe when moving the slider from left to right? ",
+         answer("Both boxes become larger.", correct = TRUE),
+         answer("The *t*-value goes up."),
+         answer("The *t*-test is significant."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ),
+  question("Manipulate the mean difference. What do you observe for the *t*-value. (two correct answers)",
+         answer("A positive mean difference renders a positive *t*-value.", correct = TRUE),
+         answer("A positive mean difference renders a negative *t*-value."),
+         answer("The *t*-value remains unaffected."),
+         answer("A negative mean difference renders a positive *t*-value."),
+         answer("A negative mean difference renders a negative *t*-value.", correct = TRUE),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ),
+    question("Set the mean difference to 10(ish) and the SD to 50(ish). Now play with the same size. What do you observe?",
+         answer("The mean difference doesn't appear significant for small sample sizes.", correct = TRUE),
+         answer("Increasing the sample size increases the mean difference."),
+         answer("Decreasing the sample size increases the mean differences."),
+         answer("Increasing the sample size decreases the mean differences."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         )
+)
+```
+
+
+## ANOVA
+
+
+```{r anova0}
+question("ANOVA is short for what?",
+         answer("Analysis of variance", correct = TRUE),
+         answer("Analysis of variability"),
+         answer("Analytics of variance"),
+         answer("Analytics of variability"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         )
+```
+
+\
+
+The Blomkvist data (see *t*-test section) are loaded in the environment. Here are the first 5 rows of the data set.
+
+```{r}
+blomkvist <- read_csv("data/blomkvist.csv") %>% select(id, rt, age_3)
+```
+
+```{r echo = F}
+slice(blomkvist, 1:5) %>% mutate(across(where(is.numeric), round, 1))
+```
+
+\
+
+
+```{r anova2b}
+quiz(caption = "You want to test whether there is a reation time difference between the age groups.",
+ question("What is the DV and what is the IV?",
+         answer("DV: reaction time; IV: age groups", correct = TRUE),
+         answer("DV: age groups; IV: reaction time"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE),          
+ question("What's the correct R code for the ANOVA?",
+         answer("model <- aov(rt ~ age_3, data = blomkvist)", correct = TRUE),
+         answer("model <- lm(rt ~ age, data = blomkvist)"),
+         answer("model <- aov(age_3 ~ rt, data = blomkvist)"),
+         answer("model -> aov(rt ~ age_3, data = blomkvist)"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ))
+```
+
+Here is the summary output of the ANOVA:
+
+```{r}
+aov_model <- aov(rt ~ age_3, data = blomkvist)
+summary(aov_model)
+```
+
+
+
+```{r anova2}
+quiz(caption = "Age difference in Blomkvist et al. (2017) data:",
+ question("You can work out the number of conditions and number of participants from the degrees of freedom. Which one is correct?",
+         answer("3 conditions, 353 participants", correct = TRUE),
+         answer("2 conditions, 350 participants"),
+         answer("3 conditions, 350 participants"),
+         answer("2 conditions, 353 participants"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ), 
+  question("How would you report the ANOVA results",
+         answer("*F*(2, 350) = 66.81, *p* < 0.001", correct = TRUE),
+         answer("*F*(3, 353) = 66.81, *p* < 0.001"),
+         answer("*F*(2, 350) = 66.81, *p* > 0.001"),
+         answer("*F*(3, 353) = 66.81, *p* > 0.001"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ), 
+  question("How would you interpret this result?",
+         answer("The three age groups show differences in reaction times.", correct = TRUE),
+         answer("Older adults have slower reaction times."),
+         answer("Younger adults have longer reaction times."),
+         answer("There is no evidence for a difference between the three age groups."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ))
+```
+
+\
+
+***
+
+We have 3 groups of data, each with 10 data-points. We can assume that the three groups are drawn from Normal distributions, which have possibly different means but have a common variance.
+
+We wish to test the null hypothesis that the means of populations from which these three samples are drawn are identical. We do so using a one-way between-subjects ANOVA. The R output is reproduced below.
+
+
+------------------------------------------------
+              Df    Sum Sq   Mean Sq   F value  
+--------- ------  -------- --------- --------- 
+group        ???    43412     ???       ???     
+
+Residuals    ???     5344     ???  
+------------------------------------------------
+
+
+
+```{r anova}
+quiz(caption = "Filling in the ???s",
+ question("What are the two degrees of freedom (df) for this ANOVA?",
+         answer("2, 27", correct = TRUE),
+         answer("3, 30"),
+         answer("3, 10"),
+         answer("2, 29"),
+         answer("3, 27"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ), 
+ question("What are the two mean square values? Hint: the arithmetic mean is the sum / N and you need the answer of the previous question to calculate the mean squares.",
+         answer("21706, 197.93", correct = TRUE),
+         answer("43412, 5344"),
+         answer("86824, 144288"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ), 
+  question("Calculate the value of the *F*-statistic (i.e. the *F*-statistic gives the ratio of the between-group to within-group mean square values).",
+         answer("109.67", correct = TRUE),
+         answer("116.52"),
+         answer("0.93"),
+         answer("2.26"),
+         answer("8.12"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ))
+```
+
+\
+
+For the following tasks you will need to open the simulation app. Click on [this link](http://shiny.ntupsychology.net/test-statistic-app/) and navigate to the "ANOVA" tab.
+
+
+```{r anova3}
+quiz(caption = "Use the simulations in the app (link above) to work out the answers to the following questions:",
+ question("Move the sliders for the mean difference and check how the plot is changing. Underneath the plot is the result summary. How does the F value change when you increase the mean differences?",
+         answer("It goes up.", correct = TRUE),
+         answer("It goes down."),
+         answer("It doesn't change."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ), 
+ question("Now use the sample-size slider. When you reduce the sample, what do you observe? (two correct answers)",
+         answer("The *p*-value goes up.", correct = TRUE),
+         answer("The variability between the three groups is varying.", correct = TRUE),
+         answer("The boxplots keep having the same size."),
+         answer("The SD is changing."),
+         answer("The second degrees of freedom term remains constant."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ), 
+  question("Choose a small effect size and manipulate the sample size. Which statement is correct?",
+         answer("A small effect size requires a large sample to be detected (by means of the *p*-value).", correct = TRUE),
+         answer("A small sample size makes it more likely to observe a statistically significant effect"),
+         answer("Large effects can only be observed with large samples."),
+         answer("Small effects disappear for large samples"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ) )
+```
+
+
+
+
+
+## Correlation
+
+
+```{r corr1 }
+question("A scatterplot of pairs of data is shown in the following plot. If we calculate the correlation coefficient (i.e. Pearson's r) for this data, which of the following statements is the most accurate? ",
+         answer("There is a correlation of near 0 between x and y.", correct = TRUE),
+         answer("There is a medium positive correlation between x and y."),
+         answer("There is a strong positive correlation between x and y."),
+         answer("There is a strong negative correlation between x and y."),
+         answer("There is a medium negative correlation between x and y"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         )
+```
+
+```{r}
+N <- 100
+cor <- 0
+sd <- 30#input$sdcor
+cors <- faux::rnorm_multi(N, 2, 0, sd, cor, varnames = c("x", "y"))
+
+ggplot(cors, aes(x = x, y = y)) +
+  geom_point(size = 2, alpha = .65) 
+```
+
+
+
+```{r corr2}
+question("The scatterplots below show pairs of data. Which of these three plots (labelled A-C) shows a negative correlation?",
+         answer("C"),
+         answer("A", correct = TRUE),
+         answer("B"),
+         answer("A and C"),
+         answer("C and B"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         )
+```
+
+
+
+```{r}
+N <- 100
+sd <- 30#input$sdcor
+
+cors <- rnorm_multi(N, 2, 0, sd, -.75, varnames = c("x", "y"))
+p1 <- ggplot(cors, aes(x = x, y = y)) +
+  geom_point(size = 1, alpha = .45) +
+  scale_x_continuous(limits = c(-100, 100), breaks = seq(-100,100,50)) +
+  scale_y_continuous(limits = c(-100, 100), breaks = seq(-100,100,50))
+
+
+cors <- rnorm_multi(N, 2, -.75, sd, 0, varnames = c("x", "y"))
+p2 <- ggplot(cors, aes(x = x, y = y)) +
+  geom_point(size = 1, alpha = .45) +
+  scale_x_continuous(limits = c(-100, 100), breaks = seq(-100,100,50)) +
+  scale_y_continuous(limits = c(-100, 100), breaks = seq(-100,100,50))
+
+
+cors <- rnorm_multi(N, 2, 0, sd, .75, varnames = c("x", "y"))
+p3 <- ggplot(cors, aes(x = x, y = y)) +
+  geom_point(size = 1, alpha = .45) +
+  scale_x_continuous(limits = c(-100, 100), breaks = seq(-100,100,50)) +
+  scale_y_continuous(limits = c(-100, 100), breaks = seq(-100,100,50))
+
+
+plot_grid(p1,p2,p3, labels = "AUTO")
+
+```
+
+
+\
+
+For the following tasks you will need to open the simulation app. Click on [this link](http://shiny.ntupsychology.net/test-statistic-app/) and navigate to the "Correlation" tab.
+
+```{r corr}
+
+quiz(caption = "Use the simulation in the app to answer the following questions.",
+  question("Move the Pearson's *r* slider to control the strength and direction of the correlation. What do you observe? (two correct answers)",
+         answer("For *r*s larger than 0 we see that higher x scores are associated with higher y scores.", correct = TRUE),
+         answer("For *r*s smaller than 0 we see that higher x scores are associated with lower y scores.", correct = TRUE),
+         answer("For *r*s smaller than  0 we see that higher x scores are associated with higher y scores."),
+         answer("For *r*s larger than 0 we see that lower x scores are associated with higher y scores."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ),
+  question("Test which of the following statements are true. (two correct answer)",
+        answer("To be statistically significant, strong correlations require a large sample size."),
+        answer("To be statistically significant, weak correlations require a large sample size.", correct = TRUE),
+        answer("To be statistically significant, strong correlations suffice a small sample size.", correct = TRUE),
+        answer("To be statistically significant, weak correlations suffice a small sample size.")
+  )
+)
+```
+
+
+
+
+## Linear regression
+
+
+```{r lm1 }
+
+quiz(caption = "",
+  question("In a linear regression problem where the predictor (or independent) variable is x and the outcome (or dependent) variable is y, if the slope of the regression line is equal to 12.5, what is the predicted change in the value of y if we change the value of x by 1 unit?",
+         answer("12.5", correct = TRUE),
+         answer("-12.5"),
+         answer("1"),
+         answer("25"),
+         answer("-25"),
+         answer("No enough information provided"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         )
+)
+```
+
+
+\
+
+For the following tasks you will need the simulation app from earlier: Click on [this link](http://shiny.ntupsychology.net/test-statistic-app/) and navigate to the "linear regression" tab.
+
+
+```{r lm3 }
+quiz(caption = "Changing model parameters with the app above",
+  question("Move the slider that determines the intercept value up and down. What is happening with the cloud of data.",
+           answer("The cloud is moving up and down in the vertical plane.", correct = TRUE),
+           answer("The cloud is changing from horizontal to diagonal."),
+           answer("Nothing at all."),
+           allow_retry = TRUE,
+           random_answer_order = TRUE
+           ),
+  question("Add a regression line (tick the regression line box). Then, move the slope slider up and down. What is happening which the cloud of data.",
+         answer("The cloud is moving up and down in the vertical plane."),
+         answer("The cloud is changing from horizontal to diagonal.", correct = TRUE),
+         answer("Nothing at all."),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ),
+  question("Set the intercept to 75 and the slope to 2. Make note of the *R*^2 value. Then move the slider for the *SD* of y up and down. How does *R*^2 change when you lower *SD*?",
+         answer("*R*^2 is getting larger", correct = TRUE),
+         answer("*R*^2 is getting smaller"),
+         answer("*R*^2 doesn't change"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ),
+  question("You set the intercept to 75 and the slope to 2. Which of these formulas is describing the regression line:",
+         answer("75 + 2x", correct = TRUE),
+         answer("2 + 75x"),
+         answer("75x + 2"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ))
+```
+
+```{r lm6b }
+question("Inspect the scatterplot below. How large is the change in the y variable for every unit of x?",
+         answer("-10", correct = TRUE),
+         answer("10"),
+         answer("0"),
+         answer("-50"),
+         answer("50"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         )
+```
+
+```{r}
+beta <- -10
+alpha <- 50
+sd <- 20
+N <- 1000
+x <- runif(N, min = 0, max = 5)
+e <- rnorm(N, sd = sd)
+y <- beta * x + alpha + e
+data <- tibble(x = x, y = y)
+
+ggplot(data = data, aes(x=x, y=y)) +
+  geom_point(size = .5, alpha = 0.45, shape = 21) +
+  geom_abline(intercept = alpha, slope = beta) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(0, 5, 1), limits = c(0,5)) 
+```
+
+
+
+
+```{r lm7 }
+quiz(caption = "",
+  question("Hypothetical case: our results showed us that students who studied longer for a test got better results. In particular, students that didn't study at all received on average 20 points and for each hour studying, students gained 10 points. How many points would a hypothetical student get that studied 4 hours?",
+         answer("60 points", correct = TRUE),
+         answer("20 points"),
+         answer("40 points"),
+         answer("10 points"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ),
+  question("In a linear regression problem, we find that the percentage of the variation in y that is explained by the variable x is 81%. What is the value of *R*^2?",
+         answer("0.81", correct = TRUE),
+         answer("81"),
+         answer("180"),
+         answer("8.1"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ))
+```
+
+```{r}
+blomkvist <- read_csv("data/blomkvist.csv") %>% select(id, rt, age)
+```
+
+\
+
+
+The Blomkvist et al. (2017) data are loaded in your environment in `blomkvist`. Here are the first few rows of the data.
+
+```{r echo = F}
+slice(blomkvist, 1:5) %>% mutate(across(where(is.numeric), round, 1))
+```
+
+
+
+```{r lmblom}
+quiz(caption = "You want to use a linear regression model to predict the reaction times from age.",
+ question("What is the outcome variable and what is the predictor variable?",
+         answer("Outcome: reaction time; predictor: age groups", correct = TRUE),
+         answer("Outcome: age groups; predictor: reaction time"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE),          
+ question("What's the correct R code for the linear regression model?",
+         answer("model <- lm(rt ~ age, data = blomkvist)", correct = TRUE),
+         answer("model <- aov(rt ~ age, data = blomkvist)"),
+         answer("model <- lm(age ~ rt, data = blomkvist)"),
+         answer("model -> lm(rt ~ age, data = blomkvist)"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ))
+```
+
+
+Below the summary of the coefficients table and the *R*$^2$ statistic.
+
+```{r}
+model <- lm(rt ~ age, data = blomkvist)
+```
+
+Model coefficients table:
+
+```{r echo = FALSE, results=FALSE}
+coefficients(summary(model))
+```
+
+```{r}
+options(scipen=2)
+coefficients(summary(model)) %>%
+  as_tibble() %>%
+  mutate(`Pr(>|t|)` = if_else(`Pr(>|t|)` < 0.001, "< 0.001", as.character(`Pr(>|t|)`))) %>%
+  mutate(across(where(is.numeric), round, 2))
+```
+
+
+The *R*$^2$ statistic is:
+
+```{r echo = FALSE}
+summary(model)$r.squared
+```
+
+
+
+```{r lmbl }
+quiz(caption = "Result of the Blomkvist et al.'s data:",
+  question("With every year of age, the reaction time ... ",
+         answer("slowed down by 5.38 msecs", correct = TRUE),
+         answer("sped up by 5.38 msecs"),
+         answer("didn't change"),
+         answer("slowed down by 340.57 msecs"),
+         answer("sped up by 340.57 msecs"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ),
+    question("Is the age effect statistically significant?",
+         answer("Yes", correct = TRUE),
+         answer("No"),
+         answer("Not clear from the output"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ),
+  question("What's the reaction time of a person aged 0?",
+         answer("5.38 msecs"),
+         answer("20.01 msecs"),
+         answer("340.57 msecs", correct = TRUE),
+         answer("17.31 msecs"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ),
+    question("How much variability in the reaction times is explained by age?",
+         answer("29.97%", correct = TRUE),
+         answer("53.80%"),
+         answer("34.06%"),
+         answer("12.26%"),
+         allow_retry = TRUE,
+         random_answer_order = TRUE
+         ))
+```
+
+
+
+
+
+
+
+
+
+## Model assumptions and evaluation
+
+
+```{r assump }
+quiz(caption = "Let's now test your understanding of model assumptions and how to evaluate them?",
+  question("The statistical tests you met so far are all parametric tests. Parametric tests make assumptions. Which assumptions are important for linear regression?",
+           answer("Normality, linearity, equality of variance, independence", correct = TRUE),
+           answer("Linearity, identical, homogeneity of variance, significance"),
+           answer("Significance, central limit theorem, independence, identically distributed"),
+           answer("p-values, heteroscedasticity, homogeneity, interactions"),
+           allow_retry = TRUE,
+           random_answer_order = TRUE),
+  question("Which of the following data are continuous?",
+          answer("Responses on a Likert scale"),
+          answer("Response times", correct = TRUE),
+          answer("Productive vocabulary of a child"),
+          answer("Independent and identically distributed"),
+          answer("Yes-no answers"),
+          allow_retry = TRUE,
+          random_answer_order = TRUE),
+    question("Which statistical concept guarantees that data are normal distributed regardless of the type of data we're sampling (as long as the sample is large enough)?",
+           answer("Central limit theorem", correct = TRUE),
+           answer("Central tendency"),
+           answer("Independent and identically distributed"),
+           answer("Statistical significance"),
+           answer("Normal distribution"),
+           allow_retry = TRUE,
+          random_answer_order = TRUE),
+    question("How can we evaluate the parametric assumptions of a statistical model?",
+          answer("Extract and inspect the model's residuals", correct = TRUE),
+          answer("Plotting the observe data"),
+          answer("Trimming data"),
+          answer("Using descriptive statistics"),
+          allow_retry = TRUE,
+          random_answer_order = TRUE))
+```
+
+\
+
+For the next questions, please consider the model fit, the plot and the the R output underneath.
+
+```{r echo=TRUE}
+model <- lm(rt ~ age, blomkvist)
+```
+
+```{r}
+blomkvist_model <- mutate(blomkvist, residuals = residuals(model))
+ggplot(blomkvist_model, aes(x = residuals)) +
+  geom_histogram()
+```
+
+```{r echo=TRUE}
+library(moments)
+skewness(residuals(model))
+```
+
+```{r evalu }
+quiz(caption = "Evaluating the fit of a linear regression.",
+  question("What does the plot show?", 
+     answer("A histogram of the model residuals", correct = TRUE),
+     answer("A histogram of the reaction times"),
+     answer("A histogram of age"),
+     allow_retry = TRUE,
+     random_answer_order = TRUE),
+  question("What is *not* a correct description of residuals?", 
+     answer("Model prediction error"),
+     answer("Unexplained variance"),
+     answer("Residual error / variance"),
+     answer("Predicted outcome", correct = TRUE),
+     allow_retry = TRUE,
+     random_answer_order = TRUE),
+  question("What are residuals, mathematically speaking?", 
+     answer("A non-normal distributed continuous random variable"),
+     answer("A line of best fit"),
+     answer("The sum of the model's intercept and slope"),
+     answer("The difference between observed data and model predictions", correct = TRUE),
+     allow_retry = TRUE,
+     random_answer_order = TRUE),
+  question("Looking at the histogram above and the R output, what can we conclude?", 
+     answer("The residuals are platykurtic distributed."),
+     answer("The residuals are perfectly normal distributed"),
+     answer("There is some violation of the normality assumption; negative skew."),
+     answer("There is some violation of the normality assumption; positive skew.", correct = TRUE),
+     allow_retry = TRUE,
+     random_answer_order = TRUE),
+    question("Which of these methods is appropriate to improve the model fit?", 
+     answer("Gather more data."),
+     answer("Use the reciprocal of the square root of the reaction time data."),
+     answer("Trim the right tail."),
+     answer("Use the logarithm of the reaction time data.", correct = TRUE),
+     allow_retry = TRUE,
+     random_answer_order = TRUE))
+  
+  
+```
+  
+
+## Fin
+
+Well done for completing all questions. Please make you understand why answers were or weren't correct. This is fundamental for your exam prep. Feel free to discuss your questions and answers with other students and with your tutor during the workshop.
+
+Good luck :)
+
+
+  
+
+
+
+
